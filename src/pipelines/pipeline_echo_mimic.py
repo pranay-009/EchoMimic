@@ -82,9 +82,11 @@ class Audio2VideoPipeline(DiffusionPipeline):
         )
 
     def enable_vae_slicing(self):
+        #optimization for performance when we have memory constraints in gpu
         self.vae.enable_slicing()
 
     def disable_vae_slicing(self):
+        #disable slicing
         self.vae.disable_slicing()
 
     def enable_sequential_cpu_offload(self, gpu_id=0):
