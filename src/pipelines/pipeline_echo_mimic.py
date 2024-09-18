@@ -595,6 +595,9 @@ class Audio2VideoPipeline(DiffusionPipeline):
         do_classifier_free_guidance = guidance_scale > 1.0
 
         # Prepare timesteps
+        c_face_locator_tensor = self.face_locator(face_mask_tensor)
+        uc_face_locator_tensor = torch.zeros_like(c_face_locator_tensor)
+        face_locator_tensor = torch.cat([uc_face_locator_tensor, c_face_locator_tensor], dim=0)
         self.scheduler.set_timesteps(num_inference_steps, device=device)
         timesteps = self.scheduler.timesteps
 
@@ -642,6 +645,7 @@ class Audio2VideoPipeline(DiffusionPipeline):
             device,
             generator
         )
+        extra_step_kwargs = self.prepare_extra_step_kwargs(generator, eta)
 
         # Preprocess reference image and move it to device once
         ref_image_tensor = self.ref_image_processor.preprocess(
